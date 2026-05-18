@@ -11,6 +11,8 @@ public class TenantStateService
         _storage = storage;
     }
 
+
+    //<<<<<<<<<<<<<<<<<<<<<<<<STORAGE
     public async Task SaveTenantAsync(Guid tenantId, string tenantName)
     {
         await _storage.SetAsync("tenant-id", tenantId);

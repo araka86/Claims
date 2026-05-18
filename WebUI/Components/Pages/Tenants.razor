@@ -2,11 +2,10 @@
 @rendermode InteractiveServer
 
 @using Application.Interfaces
-@using Application.Services
 @using Domain.Entities
 
 @inject ITenantProvider TenantProvider
-@inject FakeDataService FakeDataService
+
 
 <h3>Tenant Test</h3>
 
@@ -17,26 +16,5 @@
 
 <hr />
 
-@foreach (var item in records)
-{
-    <div>
-        @item.Name - @item.Status
-    </div>
-}
 
-@code
-{
-    private List<ClientRecord> records = new();
 
-    protected override void OnInitialized()
-    {
-        TenantProvider.OnTenantChanged += Reload;
-    }
-
-    private void Reload()
-    {
-        records = FakeDataService.GetData();
-
-        InvokeAsync(StateHasChanged);
-    }
-}

@@ -1,0 +1,85 @@
+﻿@page "/storage"
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
+@inject ProtectedLocalStorage Storage
+
+@code
+{
+    public class StorageItem
+    {
+        public string Key { get; set; } = string.Empty;
+
+        public string? Value { get; set; } = string.Empty;
+    }
+
+
+    private List<StorageItem> items = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadStorage();
+        }
+    }
+
+    private async Task LoadStorage()
+    {
+        items.Clear();
+
+        var tenantId = await Storage.GetAsync<Guid>("tenant-id");
+
+        var tenantName = await Storage.GetAsync<string>("tenant-name");
+
+        items.Add(new StorageItem
+        {
+            Key = "tenant-id",
+            Value = tenantId.Success
+                ? tenantId.Value.ToString()
+                : "null"
+        });
+
+        items.Add(new StorageItem
+        {
+            Key = "tenant-name",
+            Value = tenantName.Success
+                ? tenantName.Value
+                : "null"
+        });
+
+        StateHasChanged();
+    }
+
+
+}
+
+
+<h3>Storage Viewer</h3>
+<button @onclick="LoadStorage"> Reload Storage</button>
+<hr/>
+
+<table class="table">
+
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in items)
+        {
+            <tr>
+                <td>@item.Key</td>
+                <td>@item.Value</td>
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+

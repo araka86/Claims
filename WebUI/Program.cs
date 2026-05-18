@@ -16,8 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Tenant Provider
 builder.Services.AddScoped<ITenantProvider, TenantProvider>();
 
-// Fake data service
-builder.Services.AddScoped<FakeDataService>();
+
 
 // Browser storage
 builder.Services.AddScoped<ProtectedLocalStorage>();
