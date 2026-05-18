@@ -1,0 +1,79 @@
+﻿@rendermode InteractiveServer
+
+@using Application.Interfaces
+@using WebUI.Services
+
+@inject ITenantProvider TenantProvider
+@inject TenantStateService TenantStateService
+
+<select @onchange="OnTenantChanged">
+
+    <option value="">Select Tenant</option>
+
+    <option value="1">Client 1</option>
+
+    <option value="2">Client 2</option>
+
+</select>
+
+<span style="margin-left:20px">
+    Current:
+    @TenantProvider.TenantName
+</span>
+
+@code
+{
+    private bool _loaded;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_loaded)
+        {
+            _loaded = true;
+
+            var result = await TenantStateService.LoadTenantAsync();
+
+            if (result.Item1.HasValue)
+            {
+                TenantProvider.SetTenant(
+                    result.Item1.Value,
+                    result.Item2!);
+
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task OnTenantChanged(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString();
+
+        if (value == "1")
+        {
+            var tenantId =
+                Guid.Parse("11111111-1111-1111-1111-111111111111");
+
+            TenantProvider.SetTenant(
+                tenantId,
+                "Client 1");
+
+            await TenantStateService.SaveTenantAsync(
+                tenantId,
+                "Client 1");
+        }
+
+        if (value == "2")
+        {
+            var tenantId =
+                Guid.Parse("22222222-2222-2222-2222-222222222222");
+
+            TenantProvider.SetTenant(
+                tenantId,
+                "Client 2");
+
+            await TenantStateService.SaveTenantAsync(
+                tenantId,
+                "Client 2");
+        }
+    }
+}
